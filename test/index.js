@@ -99,6 +99,26 @@ describe('Unit:', () => {
 			});
 		});
 
+		describe('_isPaused(), _pauseIncoming(), _resumeIncoming()', () => {
+			it('works', () => {
+				let kafka = new KafkaEmitter();
+				expect(kafka._isPaused('my-topic')).to.equal(false);
+				kafka._pauseIncoming('my-topic');
+				expect(kafka._isPaused('my-topic')).to.equal(true);
+				expect(kafka._isPaused('my-other-topic')).to.equal(false);
+				kafka._pauseIncoming('my-other-topic');
+				kafka._resumeIncoming('my-topic');
+				expect(kafka._isPaused('my-topic')).to.equal(false);
+				expect(kafka._isPaused('my-other-topic')).to.equal(true);
+				kafka._resumeIncoming('my-other-topic');
+				expect(kafka._isPaused('my-topic')).to.equal(false);
+				expect(kafka._isPaused('my-other-topic')).to.equal(false);
+			});
+		});
+
+		describe('_processIncoming()', () => {
+		});
+
 		describe('emit()', () => {
 			it('adds new emits to an emit buffer', () => {
 				let kafka = new KafkaEmitter();

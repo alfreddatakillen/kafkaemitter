@@ -1,4 +1,5 @@
 const kafka = require('kafka-node');
+const Promise = require('bluebird');
 
 class KafkaEmitter {
 
@@ -14,6 +15,7 @@ class KafkaEmitter {
 		};
 
 		this._listeners = {};
+		this._paused = [];
 	}
 
 	_addIncomingMessage(topic, msg) {
@@ -60,7 +62,60 @@ class KafkaEmitter {
 		let client = this._initClient();
 	}
 
+	_isPaused(topic) {
+		return this._paused.filter(pausedTopic => topic == pausedTopic).length > 0;
+	}
+
+	_pauseIncoming(topic) {
+		this._paused.push(topic);
+	}
+
 	_processIncoming(topic) {
+		if (this._isPaused(topic)) {
+			return;
+		}
+
+		let msg = this._receiveBuffer[topic].shift();
+
+		// More messages after this one?
+		// This check should happen before we runt the listener callbacks.
+		let more = this._receiveBuffer[topic].length > 0;
+
+		if (typeof msg === 'undefined') return;
+		let promises = listeners(topic).map(listener => {
+			// Run the listener callback function:
+			return listener(msg);
+		}).filter(cbResult => {
+			// Is there any promise in the results?
+			if (typeof cbResult !== 'object' && typeof cbResult !== 'function') return false;
+			if (typeof cbResult.then !== 'function') return false;
+			return true;
+		});
+		if (promises.length === 0) {
+			// No promises was returned. Process the next message, if there is any.
+			if (more) setImmediate(() => { this._processIncoming(topic); });
+			return;
+		}
+
+		this._pauseIncoming(topic);
+
+		// Wait for promises to resolve before new messages are being sent to the
+		// listeners.
+		Promise.all(promises)
+		.catch(() => {
+			// Some might be rejected, but that should not affect how we handle stuff.
+			// Possibly, we should emit an error event (in the future)?
+		})
+		.then(() => {
+			this._resumeIncoming(topic);
+			if (this._receiveBuffer[topic].length > 0) {
+				setImmediate(() => { this._processIncoming(topic); });
+			}
+		});
+	}
+
+	_resumeIncoming(topic) {
+		this._paused = this._paused.filter(pausedTopic => topic != pausedTopic);
 	}
 
 	emit(topic, data) {
