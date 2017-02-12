@@ -27,7 +27,7 @@ class KafkaEmitter {
 		}
 		this._receiveBuffer[topic].push(msg);
 		setImmediate(() => {
-			this._processIncoming(topic);
+			this._producer(topic);
 		})
 		return true;
 	}
@@ -58,6 +58,9 @@ class KafkaEmitter {
 
 	_initProducer() {
 		let client = this._initClient();
+	}
+
+	_producer(topic) {
 	}
 
 	emit(topic, data) {

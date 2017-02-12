@@ -34,6 +34,22 @@ kafka.emit('my-kafka-topic', { test: 'some data' })
 ```
 
 
+Functions
+---------
+
+The syntax of these functions are made to mimic the standard nodejs
+`EventEmitter`.
+
+* `.emit(topic, data)` - sends a message to the Apache Kafka topic.
+* `.eventNames()` - returns an array of all topics we are listening to.
+* `.listenerCount(topic)` - returns the number of listeners on a topic.
+* `.on(topic, callback)` - adds a listener to an Apache Kafka topic.
+* `.once(topic, callback)` - adds a listener for the next message on a topic.
+* `.removeAllListeners(topic)` - removes all listeners on a topic.
+  If notopic was given, it removes all listeners from all topics.
+* `.removeListener(topic, callback)` - removes a listener.
+
+
 Configure
 ---------
 
