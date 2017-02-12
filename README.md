@@ -20,22 +20,6 @@ kafka.on('my-kafka-topic', data => {
 kafka.emit('my-kafka-topic', { test: 'some data' });
 ```
 
-### Waiting for acks on the `.emit()` function
-
-Then `.emit()` function returns a Promise which will resolve when the messages
-is acked by Apache Kafka. Use it this way:
-
-```javascript
-kafka.emit('my-kafka-topic', { test: 'some data' })
-.this(() => {
-	// This messages was acked!
-})
-.catch(err => {
-	// We did not succeed sending this message to Apache Kafka.
-});
-```
-
-
 Functions
 ---------
 
@@ -52,16 +36,19 @@ The syntax of these functions are made to mimic the standard nodejs
 * `.removeListener(topic, callback)` - removes a listener.
 
 
-Configure
----------
+Waiting for acks on the `.emit()` function
+------------------------------------------
 
-Pass a configration object as argument to the `KafkaEmitter` constructor,
-like this:
+The `.emit()` function returns a Promise which will resolve when the messages
+is acked by Apache Kafka. Use it this way:
 
 ```javascript
-const KafkaEmitter = require('kafkaemitter');
-const kafka = new KafkaEmitter({
-	connectionString: '127.0.0.1:9092,remote-server.lan:9092'
+kafka.emit('my-kafka-topic', { test: 'some data' })
+.this(() => {
+	// This messages was acked!
+})
+.catch(err => {
+	// We did not succeed sending this message to Apache Kafka.
 });
 ```
 
@@ -100,6 +87,19 @@ kafka.on('football-events', msg => {
 });
 ```
 
+
+Configure
+---------
+
+Pass a configration object as argument to the `KafkaEmitter` constructor,
+like this:
+
+```javascript
+const KafkaEmitter = require('kafkaemitter');
+const kafka = new KafkaEmitter({
+	connectionString: '127.0.0.1:9092,remote-server.lan:9092'
+});
+```
 
 Set offset
 ----------
