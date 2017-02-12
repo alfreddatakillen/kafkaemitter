@@ -56,14 +56,14 @@ describe('Unit:', () => {
 				expect(kafka._receiveBuffer).to.not.deep.equal(preBuffer);
 				expect(result).to.equal(true);
 			});
-			it('should add _producer() to the javascript event loop', done => {
+			it('should add _processIncoming() to the javascript event loop', done => {
 				let kafka = new KafkaEmitter();
 				kafka.on('my-topic', () => { });
 				kafka._addIncomingMessage('my-topic', JSON.stringify({ test: 'whatever' }));
 				// _producer() should have been added to the event loop now, but it should
 				// not have been processed yet, so it should work to add the testdouble now.
-				td.replace(kafka, '_producer');
-				td.when(kafka._producer('my-topic'))
+				td.replace(kafka, '_processIncoming');
+				td.when(kafka._processIncoming('my-topic'))
 				.thenDo(() => {
 					done();
 				});
