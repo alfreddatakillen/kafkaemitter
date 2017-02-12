@@ -1,7 +1,9 @@
 kafkaemitter
 ============
 
-This module provides a standard event emitter interface to Apache Kafka.
+This module provides a standard event emitter `.on()`/`.emit()` interface to Apache Kafka.
+Also, it guarantees total order and can block incoming messages while still processing
+previous ones.
 
 
 How to use it?
