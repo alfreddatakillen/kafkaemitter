@@ -1,6 +1,8 @@
 kafkaemitter
 ============
 
+[![Build Status](https://semaphoreci.com/api/v1/alfredgodoy/kafkaemitter/branches/master/shields_badge.svg)](https://semaphoreci.com/alfredgodoy/kafkaemitter)
+
 This module provides a standard event emitter `.on()`/`.emit()` interface to Apache Kafka.
 Also, it guarantees total order and can block incoming messages while still processing
 previous ones.
